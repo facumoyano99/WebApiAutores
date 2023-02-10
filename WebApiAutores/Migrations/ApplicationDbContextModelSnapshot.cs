@@ -31,11 +31,52 @@ namespace WebApiAutores.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Autores");
+                });
+
+            modelBuilder.Entity("WebApiAutores.Entidades.AutorLibro", b =>
+                {
+                    b.Property<int>("AutorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LibroId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Orden")
+                        .HasColumnType("int");
+
+                    b.HasKey("AutorId", "LibroId");
+
+                    b.HasIndex("LibroId");
+
+                    b.ToTable("AutoresLibros");
+                });
+
+            modelBuilder.Entity("WebApiAutores.Entidades.Comentario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Contenido")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LibroId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibroId");
+
+                    b.ToTable("Comentarios");
                 });
 
             modelBuilder.Entity("WebApiAutores.Entidades.Libro", b =>
@@ -46,34 +87,56 @@ namespace WebApiAutores.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AutorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Titulo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AutorId");
 
                     b.ToTable("Libros");
                 });
 
-            modelBuilder.Entity("WebApiAutores.Entidades.Libro", b =>
+            modelBuilder.Entity("WebApiAutores.Entidades.AutorLibro", b =>
                 {
                     b.HasOne("WebApiAutores.Entidades.Autor", "Autor")
-                        .WithMany("Libros")
+                        .WithMany("AutoresLibros")
                         .HasForeignKey("AutorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WebApiAutores.Entidades.Libro", "Libro")
+                        .WithMany("AutoresLibros")
+                        .HasForeignKey("LibroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Autor");
+
+                    b.Navigation("Libro");
+                });
+
+            modelBuilder.Entity("WebApiAutores.Entidades.Comentario", b =>
+                {
+                    b.HasOne("WebApiAutores.Entidades.Libro", "Libro")
+                        .WithMany("Comentarios")
+                        .HasForeignKey("LibroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Libro");
                 });
 
             modelBuilder.Entity("WebApiAutores.Entidades.Autor", b =>
                 {
-                    b.Navigation("Libros");
+                    b.Navigation("AutoresLibros");
+                });
+
+            modelBuilder.Entity("WebApiAutores.Entidades.Libro", b =>
+                {
+                    b.Navigation("AutoresLibros");
+
+                    b.Navigation("Comentarios");
                 });
 #pragma warning restore 612, 618
         }

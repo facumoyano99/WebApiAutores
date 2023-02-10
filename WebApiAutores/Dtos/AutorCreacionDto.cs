@@ -1,19 +1,13 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 using WebApiAutores.Validaciones;
 
-namespace WebApiAutores.Entidades
+namespace WebApiAutores.Dtos
 {
-    public class Autor
+    public class AutorCreacionDto
     {
-        public int Id { get; set; }
         [Required(ErrorMessage = "El nombre es requerido")]
         [StringLength(maximumLength: 100, ErrorMessage = "El campo {0} no debe tener mas de {1} carácteres")] //{0} se refiere al nombre del atributo que esta validando. {1} se refiere al maxlengt
         [PrimeraLetraMayuscula]
         public string Nombre { get; set; }
-
-        public List<AutorLibro> AutoresLibros { get; set; }
-
     }
 }

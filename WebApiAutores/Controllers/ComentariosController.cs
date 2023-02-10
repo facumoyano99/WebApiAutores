@@ -24,17 +24,17 @@ namespace WebApiAutores.Controllers
             this.mapper = mapper;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<List<ComentarioGetDto>>> Get(int libroId)
-        //{
-        //    var existeLibro = await context.Libros.AnyAsync(x => x.Id == libroId);
-        //    if (!existeLibro)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var comentario = await context.Comentarios.Where(x => x.LibroId == libroId).ToListAsync();
-        //    return Ok(mapper.Map<List<ComentarioGetDto>>(comentario));
-        //}
+        [HttpGet]
+        public async Task<ActionResult<List<ComentarioGetDto>>> Get(int libroId)
+        {
+            var existeLibro = await context.Libros.AnyAsync(x => x.Id == libroId);
+            if (!existeLibro)
+            {
+                return NotFound();
+            }
+            var comentario = await context.Comentarios.Where(x => x.LibroId == libroId).ToListAsync();
+            return Ok(mapper.Map<List<ComentarioGetDto>>(comentario));
+        }
 
         [HttpPost]
         public async Task<ActionResult> Post(int libroId, ComentarioCreacionDto comentarioDto)

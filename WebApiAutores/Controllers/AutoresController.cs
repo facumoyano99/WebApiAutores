@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApiAutores.Dtos;
 using WebApiAutores.Entidades;
-using WebApiAutores.Servicios;
 
 namespace WebApiAutores.Controllers
 {
@@ -13,46 +14,54 @@ namespace WebApiAutores.Controllers
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
 
-        public IServicio Servicio { get; }
-
-        public AutoresController(ApplicationDbContext context, IServicio servicio)
+        public AutoresController(ApplicationDbContext context, IMapper mapper)
         {
             this.context = context;
-            Servicio = servicio;
+            this.mapper = mapper;
         }
 
         [HttpGet]
-        public async  Task<ActionResult<List<Autor>>> Get()
+        public async Task<ActionResult<List<AutorGetDto>>> Get()
         {
-            return await context.Autores.Include(x=>x.Libros).ToListAsync();
+            var autor = await context.Autores.ToListAsync();
+            return mapper.Map<List<AutorGetDto>>(autor);
         }
-        [HttpGet]
-        [HttpGet("listado")] //api/autores/listado
-        [HttpGet("/listado")] //listado
-        public async Task<ActionResult<List<Autor>>> GetListado()
+        [HttpGet("{id:int}")]//id tiene que ser int
+        public async Task<ActionResult<AutorDtoConLibros>> Get(int id)
         {
-            return await context.Autores.Include(x => x.Libros).ToListAsync();
-        }
-        [HttpGet("listado")] //api/autores/primero
-        public async Task<ActionResult<Autor>> PrimerAutor()
-        {
-            return await context.Autores.FirstOrDefaultAsync();
-        }
-        [HttpGet("{id:int}/{param2=persona}")]//id tiene que ser int, param2 si es nulo es igual a persona.
-        public async Task<ActionResult<Autor>> Get(int id, string param2)
-        {
-            var autor = await context.Autores.FirstOrDefaultAsync(x => x.Id == id);
-            if(autor == null)
+            var autor = await context.Autores.Include(a => a.AutoresLibros).ThenInclude(al => al.Libro).FirstOrDefaultAsync(x => x.Id == id);
+            if (autor == null)
             {
                 return NotFound();
             }
-            return autor;
+            return mapper.Map<AutorDtoConLibros>(autor);
+        }
+
+        [HttpGet("{nombre}")]
+        public async Task<ActionResult<List<AutorGetDto>>> Get(string nombre)
+        {
+            var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
+            if (autores.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return mapper.Map<List<AutorGetDto>>(autores);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post (Autor autor)
+        public async Task<ActionResult> Post(AutorCreacionDto autorDto)
         {
+            var existeAutor = await context.Autores.AnyAsync(x => x.Nombre.ToLower() == autorDto.Nombre.ToLower());
+
+            if (existeAutor)
+            {
+                return BadRequest("Ya existe con autor con el nombre" + autorDto.Nombre);
+            }
+
+            var autor = mapper.Map<Autor>(autorDto);
             context.Add(autor);
             await context.SaveChangesAsync();
             return Ok();
@@ -86,7 +95,7 @@ namespace WebApiAutores.Controllers
                 return NotFound();
             }
 
-            context.Remove(new Autor() { Id = id});
+            context.Remove(new Autor() { Id = id });
             await context.SaveChangesAsync();
             return Ok();
         }
