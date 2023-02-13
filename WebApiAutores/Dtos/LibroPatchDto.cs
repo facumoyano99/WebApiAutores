@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System;
 using WebApiAutores.Validaciones;
 
 namespace WebApiAutores.Dtos
 {
-    public class LibroCreacionDto
+    public class LibroPatchDto
     {
         [PrimeraLetraMayuscula]
         [StringLength(250)]
         public string Titulo { get; set; }
-
         public DateTime FechaPublicacion { get; set; }
-
-        public List<int> AutoresIds { get; set; }
     }
 }

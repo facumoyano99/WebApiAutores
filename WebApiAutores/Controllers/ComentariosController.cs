@@ -36,6 +36,21 @@ namespace WebApiAutores.Controllers
             return Ok(mapper.Map<List<ComentarioGetDto>>(comentario));
         }
 
+        [HttpGet("{id:int}", Name ="obtenerComentario")]
+        public async Task<ActionResult<ComentarioGetDto>> GetById(int id)
+        {
+            var comentario = await context.Comentarios.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (comentario == null)
+            {
+                return NotFound();
+            }
+
+            return mapper.Map<ComentarioGetDto>(comentario);
+
+
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post(int libroId, ComentarioCreacionDto comentarioDto)
         {
@@ -49,7 +64,34 @@ namespace WebApiAutores.Controllers
             comentario.LibroId = libroId;
             context.Add(comentario);
             await context.SaveChangesAsync();
-            return Ok();
+
+            var comentarioGetDto = mapper.Map<ComentarioGetDto>(comentario);
+
+            return CreatedAtRoute("obtenerComentario", new { id = comentario.Id, libroId = libroId }, comentarioGetDto);
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put(int libroId, int id, ComentarioCreacionDto comentarioDto)
+        {
+            var existeLibro = await context.Libros.AnyAsync(x => x.Id == libroId);
+            if (!existeLibro)
+            {
+                return NotFound();
+            }
+
+            var existeComentario = await context.Comentarios.AnyAsync(c => c.Id == id);
+
+            if (!existeComentario)
+            {
+                return NotFound();
+            }
+
+            var comentario = mapper.Map<Comentario>(comentarioDto);
+            comentario.Id = id;
+            comentario.LibroId = libroId;
+            context.Update(comentario);
+            await context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

@@ -164,3 +164,7 @@ D:\Usuario\Documents\Cursos\CURZO AVANZADO .NET\WebApiAutores\WebApiAutores\obj\
 D:\Usuario\Documents\Cursos\CURZO AVANZADO .NET\WebApiAutores\WebApiAutores\obj\Debug\net6.0\ref\WebApiAutores.dll
 D:\Usuario\Documents\Cursos\CURZO AVANZADO .NET\WebApiAutores\WebApiAutores\bin\Debug\net6.0\AutoMapper.dll
 D:\Usuario\Documents\Cursos\CURZO AVANZADO .NET\WebApiAutores\WebApiAutores\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+D:\Usuario\Documents\Cursos\CURZO AVANZADO .NET\WebApiAutores\WebApiAutores\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+D:\Usuario\Documents\Cursos\CURZO AVANZADO .NET\WebApiAutores\WebApiAutores\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+D:\Usuario\Documents\Cursos\CURZO AVANZADO .NET\WebApiAutores\WebApiAutores\bin\Debug\net6.0\Newtonsoft.Json.dll
+D:\Usuario\Documents\Cursos\CURZO AVANZADO .NET\WebApiAutores\WebApiAutores\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll

@@ -28,7 +28,7 @@ namespace WebApiAutores.Controllers
             var autor = await context.Autores.ToListAsync();
             return mapper.Map<List<AutorGetDto>>(autor);
         }
-        [HttpGet("{id:int}")]//id tiene que ser int
+        [HttpGet("{id:int}", Name = "obtenerAutor")]//id tiene que ser int
         public async Task<ActionResult<AutorDtoConLibros>> Get(int id)
         {
             var autor = await context.Autores.Include(a => a.AutoresLibros).ThenInclude(al => al.Libro).FirstOrDefaultAsync(x => x.Id == id);
@@ -64,22 +64,25 @@ namespace WebApiAutores.Controllers
             var autor = mapper.Map<Autor>(autorDto);
             context.Add(autor);
             await context.SaveChangesAsync();
-            return Ok();
+
+            var autorGetDto = mapper.Map<AutorGetDto>(autor);
+
+            return CreatedAtRoute("obtenerAutor", new { id = autor.Id }, autorGetDto);
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> Put(Autor autor, int id)
+        public async Task<ActionResult> Put(AutorCreacionDto autorDto, int id)
         {
-            if (autor.Id != id)
-            {
-                return BadRequest("No coincide");
-            }
             var existe = await context.Autores.AnyAsync(x => x.Id == id);
 
             if (!existe)
             {
                 return NotFound();
             }
+
+            var autor = mapper.Map<Autor>(autorDto);
+            autor.Id = id;
+
             context.Update(autor);
             await context.SaveChangesAsync();
             return Ok();
