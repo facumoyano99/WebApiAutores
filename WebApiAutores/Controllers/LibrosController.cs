@@ -74,7 +74,7 @@ namespace WebApiAutores.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{int:id}")]
+        [HttpPatch("{id:int}")]
         public async Task<ActionResult> Patch(int id, JsonPatchDocument<LibroPatchDto> patchDocument)
         {
             if (patchDocument == null)
