@@ -13,6 +13,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json.Serialization;
+using WebApiAutores.Servicios;
 
 namespace WebApiAutores
 {
@@ -75,6 +76,26 @@ namespace WebApiAutores
             services.AddAutoMapper(typeof(Startup));
 
             services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+            services.AddAuthorization(opciones =>
+            {
+                opciones.AddPolicy("EsAdmin", politica => politica.RequireClaim("esAdmin"));
+            });
+
+            services.AddDataProtection();
+
+            services.AddDataProtection();
+
+            services.AddCors(opciones =>
+            {
+                opciones.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://www.apirequest.io").AllowAnyMethod().AllowAnyHeader();
+
+                });
+            });
+
+            services.AddTransient<HashService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -91,6 +112,8 @@ namespace WebApiAutores
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
