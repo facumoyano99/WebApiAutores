@@ -17,6 +17,7 @@ namespace WebApiAutores.Controllers
 {
     [ApiController]
     [Route("api/autores")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -31,7 +32,7 @@ namespace WebApiAutores.Controllers
         }
        
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [AllowAnonymous]
         public async Task<ActionResult<List<AutorGetDto>>> Get()
         {
             var autor = await context.Autores.ToListAsync();
@@ -49,6 +50,7 @@ namespace WebApiAutores.Controllers
         }
 
         [HttpGet("{nombre}")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<AutorGetDto>>> Get(string nombre)
         {
             var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
