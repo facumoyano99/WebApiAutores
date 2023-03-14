@@ -29,7 +29,7 @@ namespace WebApiAutores.Controllers
             this.userManager = userManager;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "obtenerComentariosLibro")]
         public async Task<ActionResult<List<ComentarioGetDto>>> Get(int libroId)
         {
             var existeLibro = await context.Libros.AnyAsync(x => x.Id == libroId);
@@ -56,7 +56,7 @@ namespace WebApiAutores.Controllers
 
         }
 
-        [HttpPost]
+        [HttpPost(Name = "crearComentario")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Post(int libroId, ComentarioCreacionDto comentarioDto)
         {
@@ -81,7 +81,7 @@ namespace WebApiAutores.Controllers
             return CreatedAtRoute("obtenerComentario", new { id = comentario.Id, libroId = libroId }, comentarioGetDto);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name = "actualizarComentario")]
         public async Task<ActionResult> Put(int libroId, int id, ComentarioCreacionDto comentarioDto)
         {
             var existeLibro = await context.Libros.AnyAsync(x => x.Id == libroId);

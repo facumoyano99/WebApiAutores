@@ -38,53 +38,7 @@ namespace WebApiAutores.Controllers
             dataProtector = dataProtectionProvider.CreateProtector("valor_unico");
         }
 
-        [HttpGet("{textoPlano}")]
-        public ActionResult RealizarHash(string textoPlano)
-        {
-            var resultado1 = hashService.Hash(textoPlano);
-            var resultado2 = hashService.Hash(textoPlano);
-
-            return Ok(new
-            {
-                textoPlano = textoPlano,
-                Hash1 = resultado1,
-                Hash2 = resultado2,
-            });
-        }
-
-        [HttpGet("encriptar")]
-        public ActionResult Encriptar()
-        {
-            string textoPlano = "Feplie Gavilan";
-            var textoCrifrado = dataProtector.Protect(textoPlano);
-            var textDescencriptado = dataProtector.Unprotect(textoCrifrado);
-
-            return Ok(new
-            {
-                textoPlano = textoPlano,
-                textoCrifrado = textoCrifrado,
-                textDescencriptado = textDescencriptado
-            });
-        }
-        [HttpGet("encriptarPorTiempo")]
-        public ActionResult EncriptarPorTiempo()
-        {
-            var tiempo = dataProtector.ToTimeLimitedDataProtector();
-
-            string textoPlano = "Feplie Gavilan";
-            var textoCrifrado = tiempo.Protect(textoPlano, lifetime: TimeSpan.FromSeconds(5));
-            Thread.Sleep(6000);
-            var textDescencriptado = dataProtector.Unprotect(textoCrifrado);
-
-            return Ok(new
-            {
-                textoPlano = textoPlano,
-                textoCrifrado = textoCrifrado,
-                textDescencriptado = textDescencriptado
-            });
-        }
-
-        [HttpPost("registrar")]
+        [HttpPost("registrar", Name = "registrarUsuario")]
         public async Task<ActionResult<RespuestaAutenticacion>> Registrar(CredencialesUsuario credenciales)
         {
             var usuario = new IdentityUser { UserName = credenciales.Email, Email = credenciales.Email };
@@ -99,7 +53,7 @@ namespace WebApiAutores.Controllers
             }
         }
 
-        [HttpPost("login")]
+        [HttpPost("login", Name = "loginUsuario")]
         public async Task<ActionResult<RespuestaAutenticacion>> Login(CredencialesUsuario credenciales)
         {
             var resultado = await signInManager.PasswordSignInAsync(credenciales.Email, credenciales.Password, isPersistent: false, lockoutOnFailure: false);
@@ -115,7 +69,7 @@ namespace WebApiAutores.Controllers
         }
 
 
-        [HttpGet("RenovarToken")]
+        [HttpGet("RenovarToken", Name = "renovarToken")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<RespuestaAutenticacion>> Renovar()
         {
@@ -155,14 +109,14 @@ namespace WebApiAutores.Controllers
             };
         }
 
-        [HttpPost("HacerAdmin")]
+        [HttpPost("HacerAdmin", Name = "hacerAdmin")]
         public async Task<ActionResult> HacerAdmin(EditarAdminDto adminDto)
         {
             var usu = await userManager.FindByEmailAsync(adminDto.Email);
             await userManager.AddClaimAsync(usu, new Claim("esAdmin", "1"));
             return NoContent();
         }
-        [HttpPost("RemoverAdmin")]
+        [HttpPost("RemoverAdmin", Name = "removerAdmin")]
         public async Task<ActionResult> RemoverAdmin(EditarAdminDto adminDto)
         {
             var usu = await userManager.FindByEmailAsync(adminDto.Email);
