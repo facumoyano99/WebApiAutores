@@ -34,29 +34,13 @@ namespace WebApiAutores.Controllers
 
         [HttpGet(Name = "obtenerAutores")]
         [AllowAnonymous]
-        public async Task<IActionResult> Get([FromQuery] bool incluirHATEOAS = true)
+        [ServiceFilter(typeof(HATEOASAutorFilterAttributte))]
+        public async Task<ActionResult<List<AutorGetDto>>> Get([FromQuery] PaginacionDto paginacionDto)
         {
-            var autor = await context.Autores.ToListAsync();
-            var dtos = mapper.Map<List<AutorGetDto>>(autor);
-
-            if (incluirHATEOAS)
-            {
-                var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
-                //dtos.ForEach(dto => generarEnlaces(dto, esAdmin.Succeeded));
-                var resultado = new ColeccionDeRecursos<AutorGetDto> { Valores = dtos };
-                resultado.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutores", new { }),
-                    descripcion: "self",
-                    metodo: "GET"));
-
-                if (esAdmin.Succeeded)
-                {
-                    resultado.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("crearAutor", new { }),
-                        descripcion: "crear-autor",
-                        metodo: "POST"));
-                }
-                return Ok(resultado);
-            }
-            return Ok(dtos);
+            var queryable = context.Autores.AsQueryable();
+            await HttpContext.InsertarParametrosPaginacionEnCabecera(queryable);
+            var autores = await queryable.OrderBy(autor=>autor.Nombre).Paginar(paginacionDto).ToListAsync();
+            return mapper.Map<List<AutorGetDto>>(autores);
         }
         [HttpGet("{id:int}", Name = "obtenerAutor")]//id tiene que ser int
         [AllowAnonymous]
@@ -74,7 +58,7 @@ namespace WebApiAutores.Controllers
 
         [HttpGet("{nombre}", Name = "obtenerAutorPorNombre")]
         [AllowAnonymous]
-        public async Task<ActionResult<List<AutorGetDto>>> Get(string nombre)
+        public async Task<ActionResult<List<AutorGetDto>>> GetPorNombre(string nombre)
         {
             var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
             if (autores.Count == 0)
